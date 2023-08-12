@@ -1,0 +1,6 @@
+numpy 
+black
+opencv-python
+matplotlib
+pillow
+tk
