@@ -105,25 +105,58 @@ def upload_image():
 
 # Run
 def process_image():
+    # global selected_image_path, window, block_size_entry, threshold_entry, image_label
+    # image = np.asarray(Image.open(selected_image_path).convert('L'))
+    # if len(image.shape) > 2:
+    #     # Carica l'immagine in toni di grigio
+    #     image = cv2.imread(selected_image_path, 0)
     image = upload_image()
     # Calcola le dimensioni dell'immagine
+    #height, width = image.shape
     height, width = image_dimension(image)
 
     block_size = int(block_size_entry.get())
     threshold = int(threshold_entry.get())
 
     # Calcola il numero di blocchi da creare
+    # num_blocks_height = height // block_size
+    # num_blocks_width = width // block_size
     num_blocks_height, num_blocks_width = num_blocks(height, width, block_size)
 
     # Calcola la dimensione effettiva dell'immagine
+    # actual_height = num_blocks_height * block_size
+    # actual_width = num_blocks_width * block_size
     actual_height, actual_width = calculate_dimension_image(height, width, block_size)
 
     # Ritaglia l'immagine alla dimensione effettiva
     image2 = image[:actual_height, :actual_width]
 
     # Suddivide l'immagine in blocchi
+    # blocks = np.split(image2, num_blocks_height, axis=0)
+    # blocks = [np.split(block, num_blocks_width, axis=1) for block in blocks]
+    # blocks = np.array(blocks)
     blocks = divide_image_in_blocks(image2, num_blocks_height, num_blocks_width)
-    
+
+    # Applica il processo a ciascun blocco
+    # for i in range(num_blocks_height):
+    #     for j in range(num_blocks_width):
+    #         block = blocks[i, j]
+
+    #         # Applica la DCT2
+    #         coefficients = apply_dct2(block)
+
+    #         # Taglia le frequenze
+    #         coefficients = threshold_cutoff(coefficients, threshold)
+
+    #         # Applica l'inversa della DCT2
+    #         reconstructed_block = apply_inverse_dct2(coefficients)
+
+    #         # Arrotonda e normalizza i valori
+    #         reconstructed_block = np.round(reconstructed_block)
+    #         reconstructed_block = np.clip(reconstructed_block, 0, 255)
+
+    #         # Aggiorna il blocco ricostruito
+    #         blocks[i, j] = reconstructed_block
     blocks = run_process_block(blocks, block_size, threshold)
 
     # Ricompone l'immagine a partire dai blocchi
@@ -133,9 +166,13 @@ def process_image():
     reconstructed_image = reconstructed_image.astype(np.uint8)
 
     # Salva l'immagine ricostruita su disco
+    # output_path = "reconstructed_image.bmp"
+    # Image.fromarray(reconstructed_image).save(output_path)
     output_path = save_disk_image(reconstructed_image)
 
     # Calcola la dimensione dell'immagine ricostruita in KB
+    #file_size_kb = os.path.getsize(output_path) / 1024
+    #file_size_kb_original = os.path.getsize(selected_image_path) / 1024
     file_size_kb_original, file_size_kb = reconstruction_dimension_image(image)
 
     # Visualizza la dimensione dell'immagine ricostruita
@@ -145,6 +182,15 @@ def process_image():
     print("Shape immagine originale:", image.shape)
     print("Shape immagine ricostruita:", reconstructed_image.shape)
 
+    # Visualizza l'immagine originale e l'immagine ricostruita affiancate
+    # fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+    # axes[0].imshow(image, cmap='gray')
+    # axes[0].set_title("Immagine originale")
+    # axes[0].axis('off')
+    # axes[1].imshow(reconstructed_image, cmap='gray')
+    # axes[1].set_title("Immagine ricostruita")
+    # axes[1].axis('off')
+    # plt.show()
     print_original_reconstructed_image(image, reconstructed_image)
 
 
