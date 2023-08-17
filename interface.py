@@ -6,11 +6,11 @@ import tkinter as tk
 import os, cv2
 
 # Utilizzo cv2 che calcola la DCT2 utilizzando una versione ottimizzata dell'algoritmo,
-def apply_dct2(image):
+def dct2(image):
     return cv2.dct(np.float32(image))
 
 # DCT2 inversa, ricostruisce l'immagine dopo l'applicazione della DCT2 e il taglio delle frequenze.
-def apply_inverse_dct2(coefficients):
+def inverse_dct2(coefficients):
     return cv2.idct(coefficients)
 
 # Elimina i coefficienti delle frequenze indesiderate al di sopra di una determinata soglia.
@@ -43,20 +43,20 @@ def divide_image_in_blocks(image, num_blocks_height, num_blocks_width):
     return blocks
 
 # Processo e utilizzo di funzioni precedenti
-def run_process_block(blocks, block_size, threshold):
+def run_process_block(blocks, threshold):
     num_blocks_height, num_blocks_width = blocks.shape[0], blocks.shape[1]
     for i in range(num_blocks_height):
         for j in range(num_blocks_width):
             block = blocks[i, j]
 
             # Applica la DCT2
-            coefficients = apply_dct2(block)
+            coefficients = dct2(block)
 
             # Taglia le frequenze
             coefficients = threshold_cutoff(coefficients, threshold)
 
             # Applica l'inversa della DCT2
-            reconstructed_block = apply_inverse_dct2(coefficients)
+            reconstructed_block = inverse_dct2(coefficients)
 
             # Arrotonda e normalizza i valori
             reconstructed_block = np.round(reconstructed_block)
@@ -73,14 +73,14 @@ def image_dimension(image):
 
 # Salva l'immagine ricostruita
 def save_disk_image(reconstructed_image):
-    img_path = "/Users/mirkopapadopoli/Code/DCT/img_reconstructed/"
+    img_path = "/Users/mirkopapadopoli/Code/DCT_Compression/img_reconstructed/"
     output_path = img_path + selected_image_path.split('/')[-1] + "_reconstructed.bmp"
     Image.fromarray(reconstructed_image).save(output_path)
     return output_path
 
 # Calcola la dimensione dell'immagine ricostruita
-def reconstruction_dimension_image(image):
-    output_path = save_disk_image(image)
+def reconstruction_dimension_image(output_path):
+    #output_path = save_disk_image(image)
     file_size_kb = os.path.getsize(output_path) / 1024
     file_size_kb_original = os.path.getsize(selected_image_path) / 1024
     return file_size_kb, file_size_kb_original
@@ -124,10 +124,10 @@ def process_image():
     # Suddivide l'immagine in blocchi
     blocks = divide_image_in_blocks(image2, num_blocks_height, num_blocks_width)
     
-    blocks = run_process_block(blocks, block_size, threshold)
+    blocks_1 = run_process_block(blocks, threshold)
 
     # Ricompone l'immagine a partire dai blocchi
-    reconstructed_image = np.block([[block for block in row] for row in blocks])
+    reconstructed_image = np.block([[block for block in row] for row in blocks_1])
 
     # Converte l'immagine in formato byte
     reconstructed_image = reconstructed_image.astype(np.uint8)
@@ -136,7 +136,7 @@ def process_image():
     output_path = save_disk_image(reconstructed_image)
 
     # Calcola la dimensione dell'immagine ricostruita in KB
-    file_size_kb_original, file_size_kb = reconstruction_dimension_image(image)
+    file_size_kb_original, file_size_kb = reconstruction_dimension_image(output_path)
 
     # Visualizza la dimensione dell'immagine ricostruita
     print(f"Dimensione dell'immagine originale: {file_size_kb_original:.2f} KB")

@@ -1,4 +1,3 @@
-
 # Importare le librerie
 import cv2 
 import numpy as np
@@ -27,9 +26,8 @@ matrixVerify1R = np.array([
     [231, 32, 233, 161, 24, 71, 140, 245]
 ], dtype = np.float32)
 
-# Applicare la DCT sulla matrice
+# Applica la DCT sulla riga
 dct_matrix1R = cv2.dct(matrixVerify1R)
-# Stampare la matrice DCT risultate
-print ("Matrice DCT:")
+# Stampare la riga DCT risultate
+print ("Riga DCT2:")
 print (dct_matrix1R)
-# Il risultato che viene è corretto ed è uguale al risultato che ci si aspettava

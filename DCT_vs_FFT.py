@@ -9,15 +9,15 @@ def my_dct2(image_block):
 
     for i in range(M):
         for j in range(N):
-            alpha_i = 1 if (i == 0) else (np.sqrt(M))
-            alpha_j = 1 if (j == 0) else (np.sqrt(N))
+            alpha_i = 1 if (i == 0) else (np.sqrt(2))
+            alpha_j = 1 if (j == 0) else (np.sqrt(2))
             sum_value = 0
 
             for x in range(M):
                 for y in range(N):
-                    cos_u = np.cos(((2 * x + 1) * i * np.pi) / (2 * M))
-                    cos_v = np.cos(((2 * y + 1) * j * np.pi) / (2 * N))
-                    sum_value += image_block[x, y] * cos_u * cos_v
+                    cos_i = np.cos(((2 * x + 1) * i * np.pi) / (2 * M))
+                    cos_j = np.cos(((2 * y + 1) * j * np.pi) / (2 * N))
+                    sum_value += image_block[x, y] * cos_i * cos_j
 
             dct_result[i, j] = alpha_i * alpha_j * sum_value / np.sqrt(M * N)
 
@@ -28,7 +28,7 @@ def generate_image(N):
 
 
 def main():
-    N_values = [2, 4, 8, 16, 32, 64]
+    N_values = [25, 50, 75, 100, 150, 200]
     times_dct2_homemade = []
     times_dct2_library = []
 
@@ -43,7 +43,7 @@ def main():
 
         # DCT2 con FFT
         start_time_fast = time.time()
-        dct_result_fast = np.fft.fft2(image_block, norm='ortho')
+        dct_result_fast = np.fft.fft2(image_block)
         end_time_fast = time.time()
         times_dct2_library.append(end_time_fast - start_time_fast)
 
